@@ -11,7 +11,7 @@ const App = () => {
 
   const AddTodo = () => {
     if (inputValue.trim()) {
-      setTodos([...todos, inputValue]);
+      setTodos([...todos, { text: inputValue, completed: false }]);
       setInputValue("");
     } else {
       alert("Please input todo");
@@ -19,25 +19,43 @@ const App = () => {
   };
 
   const DeleteTodo = (index) => {
-    const newTodos = todos.filter((_, i) => i !== index);
-    setTodos(newTodos);
+    const Confirmed = confirm("Are you sure you to delete todo?");
+    if (Confirmed) {
+      const newTodos = todos.filter((_, i) => i !== index);
+      setTodos(newTodos);
+    }
   };
 
   const editTodo = (index) => {
-    setInputValue(todos[index]);
+    setInputValue(todos[index].text);
     setIndexValue(index);
   };
 
   const updateTodo = (index) => {
     if (inputValue.trim()) {
       const newTodos = [...todos];
-      newTodos[index] = inputValue;
+      newTodos[index] = { ...newTodos[index], text: inputValue };
       setTodos(newTodos);
       setInputValue("");
       setIndexValue(undefined);
     } else {
       alert("Please input todo");
     }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      AddTodo();
+    }
+  };
+
+  const strike = (index) => {
+    const newTodos = [...todos];
+    newTodos[index] = {
+      ...newTodos[index],
+      completed: !newTodos[index].completed,
+    };
+    setTodos(newTodos);
   };
 
   return (
@@ -53,6 +71,7 @@ const App = () => {
             size="small"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
           />
 
           {indexValue !== undefined ? (
@@ -95,12 +114,20 @@ const App = () => {
             <ul className="list-unstyled">
               {todos.map((todo, index) => (
                 <li key={index} className="d-flex align-items-center ">
-                  <input type="checkbox"></input>
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => strike(index)}
+                  />
                   <span
                     className="text-start"
-                    style={{ width: "60%", marginLeft: "500px" }}
+                    style={{
+                      width: "60%",
+                      marginLeft: "500px",
+                      textDecoration: todo.completed ? "line-through" : "none",
+                    }}
                   >
-                    {todo}
+                    {todo.text}
                   </span>
 
                   <Button
@@ -110,6 +137,7 @@ const App = () => {
                       margin: "15px",
                     }}
                     onClick={() => editTodo(index)}
+                    disabled={todo.completed}
                   >
                     Edit
                   </Button>
@@ -117,6 +145,7 @@ const App = () => {
                     variant="outlined"
                     color="primary"
                     onClick={() => DeleteTodo(index)}
+                    disabled={todo.completed}
                   >
                     Delete
                   </Button>
@@ -124,7 +153,7 @@ const App = () => {
               ))}
             </ul>
           ) : (
-            <p>There are no task avaibale...please add your todo</p>
+            <p>There are no tasks available...please add your todo</p>
           )}
         </div>
       </Box>
