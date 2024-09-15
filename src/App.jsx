@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -61,6 +61,14 @@ const App = () => {
   const resetItem = () => {
     setTodos("");
   };
+  const titleIcon = () => {
+    document.title = `Achieve-Aura (${todos.length})`;
+  };
+
+  useEffect(() => {
+    titleIcon();
+    console.log("Use effect");
+  }, [todos]);
 
   return (
     <Box className="container mt-4">
