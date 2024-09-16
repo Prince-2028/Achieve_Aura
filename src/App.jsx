@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Checkbox } from "@mui/material";
+import Switch from "@mui/material/Switch";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
@@ -12,8 +13,10 @@ const App = () => {
 
   const AddTodo = () => {
     if (inputValue.trim()) {
-      setTodos([...todos, { text: inputValue, completed: false }]);
+      const temp = [...todos, { text: inputValue, completed: false }];
+      setTodos(temp);
       setInputValue("");
+      localStorage.setItem("todos", JSON.stringify(temp));
     } else {
       alert("Please input todo");
     }
@@ -24,6 +27,7 @@ const App = () => {
     if (Confirmed) {
       const newTodos = todos.filter((_, i) => i !== index);
       setTodos(newTodos);
+      localStorage.setItem("todos", JSON.stringify(newTodos));
     }
   };
 
@@ -39,6 +43,7 @@ const App = () => {
       setTodos(newTodos);
       setInputValue("");
       setIndexValue(undefined);
+      localStorage.setItem("todos", JSON.stringify(newTodos));
     } else {
       alert("Please input todo");
     }
@@ -57,9 +62,11 @@ const App = () => {
       completed: !newTodos[index].completed,
     };
     setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
   };
   const resetItem = () => {
     setTodos("");
+    localStorage.removeItem("todos");
   };
   const titleIcon = () => {
     document.title = `Achieve-Aura (${todos.length})`;
@@ -67,8 +74,15 @@ const App = () => {
 
   useEffect(() => {
     titleIcon();
-    console.log("Use effect");
   }, [todos]);
+
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem("todos"));
+
+    if (items) {
+      setTodos(items);
+    }
+  }, []);
 
   return (
     <Box className="container mt-4">
